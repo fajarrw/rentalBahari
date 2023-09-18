@@ -1,6 +1,6 @@
 const express = require('express');
 
-const User = require('../models/userModel')
+const User = require('../models/userModel');
 const router = express.Router()
 
 // get all users
@@ -58,7 +58,35 @@ router.post('/', async (req, res) => {
 })
 
 // DELETE
+router.delete('/:id', async (req, res) => {
+    try {
+        const _id = req.params.id
+        const userToDelete = await User.findById(_id)
+        if (!userToDelete) {
+            res.status(404).json({ message: 'User not exists' })
+            return
+        }
+
+        await User.deleteOne({ _id: _id })
+        res.status(204).json({ message: 'User deleted successfully' })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: err })
+    }
+})
 
 // PUT
-
+router.put('/:id', async (req, res) => {
+    try {
+        const _id = req.params.id
+        const userToEdit = await User.findOne(_id)
+        if (!userToEdit) {
+            res.status(404).json({ message: 'User not exists' })
+            return
+        }
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: err })
+    }
+})
 module.exports = router;
