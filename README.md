@@ -15,5 +15,5 @@ MONGO_URL="your mongo string connection"
 ```
 4. Make sure that you're in the root folder, then run
 ```shell
-nodemon index
+npm run dev
 ``` 
