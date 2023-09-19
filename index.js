@@ -5,7 +5,7 @@ const app = express();
 const dbConfig = require('./dbConnect');
 const carRoute = require('./routes/carRoute')
 const userRoute = require('./routes/userRoute')
-const assuranceRoute = require('./route/assuranceRoute')
+const assuranceRoute = require('./routes/assuranceRoute')
 
 app.use(express.json());
 app.use('/api/car', carRoute);
