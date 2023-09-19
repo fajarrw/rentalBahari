@@ -9,11 +9,7 @@ git clone https://github.com/fajarrw/rentalBahari.git
 ```shell
 npm install
 ```
-3. Make .env file in root folder. You can follow the .env.example
-```shell
-MONGO_URL="your mongo string connection"
-```
-4. Make sure that you're in the root folder, then run
+3. Make sure that you're in the root folder, then run
 ```shell
 npm run dev
 ``` 
