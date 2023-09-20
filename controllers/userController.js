@@ -27,6 +27,7 @@ const getUserById = async (req, res, next) => {
     }
 }
 
+// TODO: implement bycrypt to encrypt password
 const addUser = async (req, res, next) => {
     try {
         const { username, email, password, telp } = await req.body
@@ -59,9 +60,8 @@ const deleteUser = async (req, res, next) => {
             res.status(404).json({ message: 'User not exists' })
             return
         }
-
         await User.deleteOne({ _id: _id })
-        res.status(204).json({ message: 'User deleted successfully' })
+        res.status(204).json({ message: 'User updated successfully' })
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: err })
@@ -72,11 +72,20 @@ const deleteUser = async (req, res, next) => {
 const editUser = async (req, res, next) => {
     try {
         const _id = req.params.id
-        const userToEdit = await User.findOne(_id)
+        const { username, email, password, telp } = req.body
+        const userToEdit = await User.findById(_id)
         if (!userToEdit) {
             res.status(404).json({ message: 'User not exists' })
             return
         }
+        await User.updateOne({ _id: _id }, {
+            username: username,
+            email: email,
+            password: password,
+            telp: telp,
+            updatedAt: Date.now()
+        })
+        res.status(204).json({ message: 'User updated successfully' })
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: err })
