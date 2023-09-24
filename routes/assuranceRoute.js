@@ -2,7 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 const Assurance = require("../models/assuranceModel");
+const Validator = require('jsonschema').Validator;
 
+//getall
 router.get("/", async (req, res) => {
 	try {
 		const assurance = await Assurance.find({});
@@ -13,6 +15,25 @@ router.get("/", async (req, res) => {
 	}
 })
 
+//get one
+router.get('/:id', async (req, res) => {
+  try {
+      const _id = req.params.id
+      const assurance = await Assurance.findById(_id)
+
+      // handle null user
+      if (!assurance) {
+          res.status(404).json({ error: 'Assurance not found' })
+          return
+      }
+
+      res.status(200).json({ assurance: assurance })
+  } catch (err) {
+      res.status(500).json({ error: err })
+  }
+})
+
+//create
 router.post("/create", async (req, res) => {
     try {
       const { alamat, nik, foto_ktp } = req.body;
@@ -39,6 +60,7 @@ router.post("/create", async (req, res) => {
     }
   });
 
+//delete
 router.delete("/:id", async (req, res) => {
     try {
         const assuranceId = req.params.id;
@@ -58,6 +80,52 @@ router.delete("/:id", async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "An error occurred" });
     }
+});
+
+//edit
+router.put('/:id', async (req, res) => {
+	try {
+    //validate main keys
+		if (!req.params.id || !req.body.nik || !req.body.foto_ktp || !req.body.alamat) {
+			res.status(400).json({ message: "Bad request. Missing required fields" });
+			return;
+		}
+
+    //validate alamat json
+    const schema = {
+      type: 'object',
+      properties: {
+        jalan: { type: 'string' },
+        kelurahan: { type: 'string' },
+        kecamatan: { type: 'string' },
+        kota: { type: 'string' },
+        provinsi: { type: 'string' },
+      },
+      required: ['jalan', 'kelurahan', 'kecamatan', 'kota', 'provinsi'],
+    };
+    const validator = new Validator();
+    if (!validator.validate(req.body.alamat, schema).valid){
+      res.status(400).json({ message: "Missing alamat attribute or unmatched schema" })
+      return;
+    }
+
+		const _id = req.params.id;
+		const { alamat, nik, foto_ktp } = req.body;
+		const assToEdit = await Assurance.findById(_id);
+		if (!assToEdit) {
+			res.status(404).json({ message: "Assurance does not exist" });
+			return;
+		}
+		await Assurance.updateOne({ _id: _id }, {
+            alamat,
+            nik,
+            foto_ktp
+        })
+        res.status(200).json({ message: 'Assurance updated successfully' })
+	} catch (err) {
+		console.error({ error: err });
+		res.status(500).json({ error: err });
+	}
 });
 
 module.exports = router;
