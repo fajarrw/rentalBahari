@@ -57,12 +57,12 @@ const deleteCar = async (req, res) => {
 
 const editCar = async (req, res) => {
 	try {
-		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model) {
+		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model || !req.body.rent) {
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
 		const _id = req.body._id;
-		const { name, type, price, model } = req.body;
+		const { name, type, price, model, rent } = req.body;
 		const carToEdit = await Car.findById(_id);
 		if (!carToEdit) {
 			res.status(404).json({ message: "Car does not exist" });
@@ -73,8 +73,9 @@ const editCar = async (req, res) => {
             type,
             price,
             model,
-        })
-        res.status(200).json({ message: 'User updated successfully' })
+			rent
+        });
+        res.status(200).json({ message: 'User updated successfully' });
 	} catch (err) {
 		console.error({ error: err });
 		res.status(500).json({ error: err });
