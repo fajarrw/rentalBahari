@@ -47,7 +47,9 @@ const createRent = async (req, res) => {
 		car.rent.push(savedRentData._id)
 		await car.save()
 
-		//TODO: save rent id to its user
+		//save rent id to its user
+		customer.rent.push(savedRentData._id)
+		await customer.save()
 
 		res.status(201).json({ message: "Rent created successfully", rent: savedRentData })
 	} catch (err) {
@@ -82,7 +84,15 @@ const deleteRent = async (req, res) => {
 			await car.save();
 		}
 
-		//TODO: delete rent id from its user
+		//delete rent id from its user
+		const customer = await User.findById(rentToDelete.customerID)
+		if (customer) {
+			const index = customer.rent.indexOf(rentToDelete._id);
+			if (index > -1) { // only splice array when item is found
+				customer.rent.splice(index, 1); // 2nd parameter means remove one item only
+			}
+			await customer.save();
+		}
 
 		//delete rent
 		await Rent.deleteOne({ _id: _id });

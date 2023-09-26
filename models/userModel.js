@@ -6,8 +6,9 @@ const userSchema = Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     telp: { type: String, required: true },
+    rent: [],
     createdAt: { type: Date, default: Date.now(), required: true },
-    updatedAt: { type: Date, default: Date.now(), required: true },
+    updatedAt: { type: Date, default: Date.now(), required: true }
 });
 
 const userModel = models.User || model('user', userSchema);
