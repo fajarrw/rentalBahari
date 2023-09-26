@@ -68,7 +68,6 @@ const deleteUser = async (req, res, next) => {
     }
 }
 
-// TODO: finish this function pls /(`Δ`)Γ
 const editUser = async (req, res, next) => {
     try {
         const _id = req.params.id
