@@ -17,8 +17,7 @@ const carSchema = Schema({
     model: {
         type: String,
         required: true
-    },
-    rent: []
+    }
 });
 
 const carModel = models.Car || model('car', carSchema);

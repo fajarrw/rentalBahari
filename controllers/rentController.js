@@ -43,14 +43,6 @@ const createRent = async (req, res) => {
 		const newRent = await Rent.create(rentData)
 		const savedRentData = await newRent.save()
 
-		//save rent id to its car
-		car.rent.push(savedRentData._id)
-		await car.save()
-
-		//save rent id to its user
-		customer.rent.push(savedRentData._id)
-		await customer.save()
-
 		res.status(201).json({ message: "Rent created successfully", rent: savedRentData })
 	} catch (err) {
 		console.error(err)
@@ -72,26 +64,6 @@ const deleteRent = async (req, res) => {
 		if (!rentToDelete) {
 			res.status(404).json({ message: "Rent does not exist" });
 			return;
-		}
-
-		//delete rent id from its car
-		const car = await Car.findById(rentToDelete.carID)
-		if (car) {
-			const index = car.rent.indexOf(rentToDelete._id);
-			if (index > -1) { // only splice array when item is found
-				car.rent.splice(index, 1); // 2nd parameter means remove one item only
-			}
-			await car.save();
-		}
-
-		//delete rent id from its user
-		const customer = await User.findById(rentToDelete.customerID)
-		if (customer) {
-			const index = customer.rent.indexOf(rentToDelete._id);
-			if (index > -1) { // only splice array when item is found
-				customer.rent.splice(index, 1); // 2nd parameter means remove one item only
-			}
-			await customer.save();
 		}
 
 		//delete rent
