@@ -7,7 +7,8 @@ const userSchema = Schema({
     password: { type: String, required: true },
     telp: { type: String, required: true },
     createdAt: { type: Date, default: Date.now(), required: true },
-    updatedAt: { type: Date, default: Date.now(), required: true }
+    updatedAt: { type: Date, default: Date.now(), required: true },
+    assuranceId: { type: String }
 });
 
 const userModel = models.User || model('user', userSchema);
