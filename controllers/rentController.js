@@ -102,5 +102,22 @@ const editRent = async (req, res) => {
 	}
 };
 
+const searchRent  = async (req, res) => {
+	try {
+		const _id = req.body._id;
+		const rentToSearch = await Rent.findById(_id);
+		if (!rentToSearch) {
+			res.status(404).json({ message: "Rent does not exist" });
+			return;
+		}
 
-module.exports = { getAllRent, createRent, deleteRent, editRent };
+		//delete rent
+		res.status(200).json({ rentToSearch : rentToSearch });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: err });
+	}
+  };
+
+
+module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent };
