@@ -16,7 +16,8 @@ const carSchema = mongoose.Schema({
     model: {
         type: String,
         required: true
-    }
+    },
+    rent: []
 });
 
 const carModel = mongoose.model('car', carSchema); //car di sini adalah nama collection yang ada di MongoDB

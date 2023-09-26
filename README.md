@@ -1,9 +1,10 @@
 # Rental Bahari
 ## Getting Started
 Setting up project for local usage.
-1. Clone or download this repository
+1. Clone or download this repository then open the rentalBahari folder
 ```shell
 git clone https://github.com/fajarrw/rentalBahari.git
+cd rentalBahari
 ```
 2. Install NPM Packages
 ```shell
