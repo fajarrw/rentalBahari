@@ -5,8 +5,10 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jsonschema": "^1.4.1",
     "mongodb": "^6.0.0",
-    "mongoose": "^7.5.1",
+    "mongoose": "^7.5.2",
+    "mongoose-timestamp": "^0.6.0",
     "nodemon": "^3.0.1"
   }
 }

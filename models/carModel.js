@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
+// import Schema and model from mongoose
+const { Schema, models, model } = require("mongoose");
 
-const carSchema = mongoose.Schema({
+const carSchema = Schema({
     name: {
         type: String,
         required: true
@@ -19,5 +20,5 @@ const carSchema = mongoose.Schema({
     }
 });
 
-const carModel = mongoose.model('car', carSchema); //car di sini adalah nama collection yang ada di MongoDB
+const carModel = models.Car || model('car', carSchema);
 module.exports = carModel; 

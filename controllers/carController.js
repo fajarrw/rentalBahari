@@ -57,7 +57,7 @@ const deleteCar = async (req, res) => {
 
 const editCar = async (req, res) => {
 	try {
-		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model) {
+		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model ) {
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
@@ -72,9 +72,9 @@ const editCar = async (req, res) => {
             name,
             type,
             price,
-            model,
-        })
-        res.status(200).json({ message: 'User updated successfully' })
+            model
+        });
+        res.status(200).json({ message: 'User updated successfully' });
 	} catch (err) {
 		console.error({ error: err });
 		res.status(500).json({ error: err });
