@@ -102,22 +102,45 @@ const editRent = async (req, res) => {
 	}
 };
 
-const searchRent  = async (req, res) => {
+const searchRent = async (req, res) => {
 	try {
-		const _id = req.body._id;
-		const rentToSearch = await Rent.findById(_id);
-		if (!rentToSearch) {
-			res.status(404).json({ message: "Rent does not exist" });
-			return;
+		const { _id, carID, customerID, start, end, status, order, sortBy } = req.query;
+		var filter = {};
+
+		// make a filter consisting of every inputted query
+		if (_id) {
+			filter = { ...filter, _id }
+		} 
+		if (carID) {
+			filter = { ...filter, carID }
+		}
+		if (customerID) {
+			filter = { ...filter, customerID }
+		}
+		if (start) {
+			filter = { ...filter, start }
+		}
+		if (end) {
+			filter = { ...filter, end }
+		}
+		if (status) {
+			filter = { ...filter, status }
 		}
 
-		//delete rent
-		res.status(200).json({ rentToSearch : rentToSearch });
+		// sort if user wants to sort. otherwise, don't
+		if (sortBy && order) {
+			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
+			const sortOrder = { [sortBy]: orderCode };
+			const response = await Rent.find(filter).sort(sortOrder);
+			res.json(response);
+		} else {
+			const response = await Rent.find(filter);
+			res.json(response);
+		}
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ error: err });
+		res.status(500).json({ error: err })
 	}
-  };
-
+};
 
 module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent };
