@@ -58,8 +58,8 @@ const createAdmin = async (req, res) => {
 			password,
 		}
 		const newAdmin = await Admin.create(adminData)
-		const savedAdminData = await newCar.save()
-		res.status(201).json({ message: "Admin created successfully", admin: savedAdmminData })
+		const savedAdminData = await newAdmin.save()
+		res.status(201).json({ message: "Admin created successfully", admin: savedAdminData })
 	} catch (err) {
 		console.error(err)
 		res.status(500).json({ error: err })
