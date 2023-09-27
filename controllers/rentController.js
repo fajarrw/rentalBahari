@@ -117,14 +117,15 @@ const searchRent = async (req, res) => {
 		if (customerID) {
 			filter = { ...filter, customerID }
 		}
-		if (start) {
-			filter = { ...filter, start }
-		}
-		if (end) {
-			filter = { ...filter, end }
-		}
 		if (status) {
 			filter = { ...filter, status }
+		}
+
+		if (start && end) {
+			filter = { ...filter, $or: [
+				{ start: { $gte: new Date(start) } },
+				{ end: { $lte: new Date(end) } }
+			]}
 		}
 
 		// sort if user wants to sort. otherwise, don't

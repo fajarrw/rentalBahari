@@ -1,4 +1,5 @@
 const Car = require('../models/carModel');
+const Rent = require('../models/rentModel');
 
 const getAllCar = async (req, res) => {
 	try {
@@ -120,4 +121,55 @@ const searchCar = async (req, res) => {
 	}
 };
 
-module.exports = { getAllCar, createCar, deleteCar, editCar, searchCar };
+const searchAvailableCar = async (req, res) => {
+	try {
+		const { start, end, model, type, maxPrice, minPrice, order, sortBy } = req.query;
+
+		if (!start || !end) {
+			res.status(400).json({ message: "Bad request. Missing required fields" });
+			return;
+		}
+		
+		filter = { $or: [
+			{ start: { $gte: new Date(start) } },
+			{ end: { $lte: new Date(end) } }
+		]}
+
+		var carID = [];
+		const rent = await Rent.find(filter);
+		rent.forEach(function (u) { carID.push( u.carID ) });
+
+		var carFilter = { _id : { $nin: carID } };
+		if (model) {
+			carFilter = { ...carFilter, model }
+		}
+		if (type) {
+			carFilter = { ...carFilter, type }
+		}
+
+		if (maxPrice && minPrice) {
+			carFilter = { ...carFilter, price: { $lte: maxPrice, $gte: minPrice } }
+		}
+		else if (minPrice) {
+			carFilter = { ...carFilter, price: { $gte: minPrice } }
+		}
+		else if (maxPrice) {
+			carFilter = { ...carFilter, price: { $lte: maxPrice } }
+		} 
+		
+		if (sortBy && order) {
+			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
+			const sortOrder = { [sortBy]: orderCode };
+			const response = await Car.find(carFilter).sort(sortOrder);
+			res.json(response);
+		} else {
+			const response = await Car.find(carFilter);
+			res.json(response);
+		}
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: err });
+	}
+};
+
+module.exports = { getAllCar, createCar, deleteCar, editCar, searchCar, searchAvailableCar };
