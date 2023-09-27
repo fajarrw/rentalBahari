@@ -36,7 +36,7 @@ const deleteAdmin = async (req, res) => {
             return
         }
         await Admin.deleteOne({ _id })
-        res.status(204).json({ message: 'Admin updated successfully' })
+        res.status(204).json({ message: 'Admin deleted successfully' })
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: err })
