@@ -28,7 +28,6 @@ const getUserById = async (req, res, next) => {
     }
 }
 
-// TODO: implement bycrypt to encrypt password
 const addUser = async (req, res, next) => {
     try {
         var { username, email, password, telp } = await req.body
