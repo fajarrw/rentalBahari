@@ -1,4 +1,5 @@
 const User = require('../models/userModel')
+const bcrypt = require('bcrypt')
 
 const getAllUser = async (req, res, next) => {
     try {
@@ -30,22 +31,28 @@ const getUserById = async (req, res, next) => {
 // TODO: implement bycrypt to encrypt password
 const addUser = async (req, res, next) => {
     try {
-        const { username, email, password, telp } = await req.body
-
+        var { username, email, password, telp } = await req.body
+        const SALT = 10
         //input validation
         if (!username || !email || !password || !telp) {
             res.status(400).json({ error: 'Bad request. Missing required fields' })
         }
 
-        const userData = {
-            username,
-            email,
-            password,
-            telp,
-        }
-        const newUser = await User.create(userData)
-        const savedUserData = await newUser.save()
-        res.status(201).json({ message: 'User created successfully', user: savedUserData })
+        bcrypt.hash(password, SALT, async (err, hash) => {
+            const userData = {
+                username,
+                email,
+                password: hash,
+                telp,
+            }
+            const newUser = await User.create(userData)
+            const savedUserData = await newUser.save()
+            res.status(201).json({
+                message: 'User created successfully',
+                _id: savedUserData._id,
+            })
+        })
+
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: err })
