@@ -58,7 +58,7 @@ const deleteCar = async (req, res) => {
 
 const editCar = async (req, res) => {
 	try {
-		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model ) {
+		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model) {
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
@@ -70,12 +70,12 @@ const editCar = async (req, res) => {
 			return;
 		}
 		await Car.updateOne({ _id: _id }, {
-            name,
-            type,
-            price,
-            model
-        });
-        res.status(200).json({ message: 'User updated successfully' });
+			name,
+			type,
+			price,
+			model
+		});
+		res.status(200).json({ message: 'User updated successfully' });
 	} catch (err) {
 		console.error({ error: err });
 		res.status(500).json({ error: err });
@@ -129,17 +129,19 @@ const searchAvailableCar = async (req, res) => {
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
-		
-		filter = { $or: [
-			{ start: { $gte: new Date(start) } },
-			{ end: { $lte: new Date(end) } }
-		]}
+
+		filter = {
+			$or: [
+				{ start: { $gte: new Date(start) } },
+				{ end: { $lte: new Date(end) } }
+			]
+		}
 
 		var carID = [];
 		const rent = await Rent.find(filter);
-		rent.forEach(function (u) { carID.push( u.carID ) });
+		rent.forEach(function (u) { carID.push(u.carID) });
 
-		var carFilter = { _id : { $nin: carID } };
+		var carFilter = { _id: { $nin: carID } };
 		if (model) {
 			carFilter = { ...carFilter, model }
 		}
@@ -155,8 +157,8 @@ const searchAvailableCar = async (req, res) => {
 		}
 		else if (maxPrice) {
 			carFilter = { ...carFilter, price: { $lte: maxPrice } }
-		} 
-		
+		}
+
 		if (sortBy && order) {
 			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
 			const sortOrder = { [sortBy]: orderCode };
