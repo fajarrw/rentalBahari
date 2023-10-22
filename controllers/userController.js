@@ -36,6 +36,8 @@ const addUser = async (req, res, next) => {
         if (!username || !email || !password || !telp) {
             res.status(400).json({ error: 'Bad request. Missing required fields' })
         }
+        const user = await User.findOne({ email: email })
+        if (user !== null) return res.status(409).send({ message: "User already exists" })
 
         bcrypt.hash(password, SALT, async (err, hash) => {
             const userData = {
