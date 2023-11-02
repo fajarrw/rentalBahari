@@ -1,4 +1,5 @@
 const Admin = require('../models/adminModel')
+const bcrypt = require('bcrypt')
 
 const getAllAdmin = async (req, res) => {
     try {
@@ -44,26 +45,33 @@ const deleteAdmin = async (req, res) => {
 }
 
 const createAdmin = async (req, res) => {
-	try {
-		const { username, password } = await req.body
+    try {
+        const { username, password } = await req.body
+        const SALT = 10
+        //input validation
+        if (!username || !password) {
+            res.status(400).json({ error: "Bad request. Missing required fields" })
+            return
+        }
+        const admin = await Admin.findOne({ username: username })
+        if (admin !== null) return res.status(409).send({ message: "Admin already exists" })
 
-		//input validation
-		if (!username || !password) {
-			res.status(400).json({ error: "Bad request. Missing required fields" })
-			return
-		}
-
-		const adminData = {
-			username,
-			password,
-		}
-		const newAdmin = await Admin.create(adminData)
-		const savedAdminData = await newAdmin.save()
-		res.status(201).json({ message: "Admin created successfully", admin: savedAdminData })
-	} catch (err) {
-		console.error(err)
-		res.status(500).json({ error: err })
-	}
+        bcrypt.hash(password, SALT, async (err, hash) => {
+            const adminData = {
+                username,
+                password: hash,
+            }
+            const newAdmin = await Admin.create(adminData)
+            const savedAdminData = await newAdmin.save()
+            res.status(201).json({
+                message: 'Admin created successfully',
+                _id: savedAdminData._id,
+            })
+        })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: err })
+    }
 };
 
 const editAdmin = async (req, res) => {
