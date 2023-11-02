@@ -2,6 +2,10 @@
 const { Schema, models, model } = require("mongoose");
 
 const carSchema = Schema({
+    imageData: {
+        type: String,
+        required: true,
+    },
     name: {
         type: String,
         required: true
@@ -16,6 +20,14 @@ const carSchema = Schema({
     },
     model: {
         type: String,
+        required: true
+    },
+    transmission: {
+        type: String,
+        required: true
+    },
+    seatNumber: {
+        type: Number,
         required: true
     }
 });

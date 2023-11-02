@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require('cors')
+const bodyParser = require('body-parser')
 require("dotenv").config();
 
 const app = express();
@@ -12,7 +13,8 @@ const rentRoute = require('./routes/rentRoute')
 const authRoute = require('./routes/auth')
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/api/car', carRoute);
 app.use('/api/users', userRoute);
 app.use('/api/assurance', assuranceRoute)

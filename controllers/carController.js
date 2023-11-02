@@ -13,10 +13,9 @@ const getAllCar = async (req, res) => {
 
 const createCar = async (req, res) => {
 	try {
-		const { name, type, price, model } = await req.body
-
+		const { imageData, name, type, price, model, transmission, seatNumber } = await req.body
 		//input validation
-		if (!name || !type || !price || !model) {
+		if (!name || !type || !price || !model || !imageData || !seatNumber || !transmission) {
 			res.status(400).json({ error: "Bad request. Missing required fields" })
 			return
 		}
@@ -26,10 +25,16 @@ const createCar = async (req, res) => {
 			type,
 			price,
 			model,
+			imageData,
+			transmission,
+			seatNumber
 		}
 		const newCar = await Car.create(carData)
 		const savedCarData = await newCar.save()
-		res.status(201).json({ message: "Car created successfully", car: savedCarData })
+		res.status(201).json({
+			message: "Car created successfully",
+			car: savedCarData
+		})
 	} catch (err) {
 		console.error(err)
 		res.status(500).json({ error: err })

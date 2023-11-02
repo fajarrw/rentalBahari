@@ -30,12 +30,13 @@ const getUserById = async (req, res, next) => {
 
 const addUser = async (req, res, next) => {
     try {
-        var { username, email, password, telp } = await req.body
+        let { username, email, password, telp } = await req.body
         const SALT = 10
         //input validation
         if (!username || !email || !password || !telp) {
-            res.status(400).json({ error: 'Bad request. Missing required fields' })
+            return res.status(400).send({ error: 'Bad request. Missing required fields' })
         }
+
         const user = await User.findOne({ email: email })
         if (user !== null) return res.status(409).send({ message: "User already exists" })
 
@@ -46,6 +47,7 @@ const addUser = async (req, res, next) => {
                 password: hash,
                 telp,
             }
+
             const newUser = await User.create(userData)
             const savedUserData = await newUser.save()
             res.status(201).json({
