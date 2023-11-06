@@ -1,13 +1,15 @@
+const Logger = require('../lib/logger');
 const Car = require('../models/carModel');
 const Rent = require('../models/rentModel');
 
 const getAllCar = async (req, res) => {
 	try {
 		const car = await Car.find({});
+		Logger.Get(req)
 		res.status(200).json({ car });
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: err });
+		Logger.Error(req, __filename, err)
+		res.status(500).json({ message: 'Internal server error' });
 	}
 };
 
@@ -16,6 +18,7 @@ const createCar = async (req, res) => {
 		const { imageData, name, type, price, model, transmission, seatNumber } = await req.body
 		//input validation
 		if (!name || !type || !price || !model || !imageData || !seatNumber || !transmission) {
+			Logger.BadRequest(req)
 			res.status(400).json({ error: "Bad request. Missing required fields" })
 			return
 		}
@@ -31,12 +34,13 @@ const createCar = async (req, res) => {
 		}
 		const newCar = await Car.create(carData)
 		const savedCarData = await newCar.save()
+		Logger.Post(req, savedCarData._id)
 		res.status(201).json({
 			message: "Car created successfully",
 			car: savedCarData
 		})
 	} catch (err) {
-		console.error(err)
+		Logger.Error(req, __filename, err)
 		res.status(500).json({ error: err })
 	}
 };
@@ -44,19 +48,22 @@ const createCar = async (req, res) => {
 const deleteCar = async (req, res) => {
 	try {
 		if (!req.body._id) {
+			Logger.BadRequest(req)
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
 		const _id = req.body._id;
 		const carToDelete = await Car.findById(_id);
 		if (!carToDelete) {
+			Logger.NotFound(req)
 			res.status(404).json({ message: "Car does not exist" });
 			return;
 		}
 		await Car.deleteOne({ _id: _id });
+		Logger.Delete(req)
 		res.status(200).json({ message: "Car deleted successfully" });
 	} catch (err) {
-		console.error(err);
+		Logger.Error(req, __filename, err)
 		res.status(500).json({ error: err });
 	}
 };
@@ -64,6 +71,7 @@ const deleteCar = async (req, res) => {
 const editCar = async (req, res) => {
 	try {
 		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model) {
+			Logger.BadRequest(req);
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
@@ -71,6 +79,7 @@ const editCar = async (req, res) => {
 		const { name, type, price, model } = req.body;
 		const carToEdit = await Car.findById(_id);
 		if (!carToEdit) {
+			Logger.NotFound(req)
 			res.status(404).json({ message: "Car does not exist" });
 			return;
 		}
@@ -80,9 +89,10 @@ const editCar = async (req, res) => {
 			price,
 			model
 		});
+		Logger.Update(req)
 		res.status(200).json({ message: 'User updated successfully' });
 	} catch (err) {
-		console.error({ error: err });
+		Logger.Error(req, __filename, err)
 		res.status(500).json({ error: err });
 	}
 };
@@ -115,13 +125,15 @@ const searchCar = async (req, res) => {
 			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
 			const sortOrder = { [sortBy]: orderCode };
 			const response = await Car.find(filter).sort(sortOrder);
+			Logger.Get(req)
 			res.json(response);
 		} else {
 			const response = await Car.find(filter);
+			Logger.Get(req)
 			res.json(response);
 		}
 	} catch (err) {
-		console.error(err);
+		Logger.Error(req, __filename, err)
 		res.status(500).json({ error: err })
 	}
 };
@@ -131,6 +143,7 @@ const searchAvailableCar = async (req, res) => {
 		const { start, end, model, type, maxPrice, minPrice, order, sortBy } = req.query;
 
 		if (!start || !end) {
+			Logger.BadRequest(req)
 			res.status(400).json({ message: "Bad request. Missing required fields" });
 			return;
 		}
@@ -168,13 +181,15 @@ const searchAvailableCar = async (req, res) => {
 			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
 			const sortOrder = { [sortBy]: orderCode };
 			const response = await Car.find(carFilter).sort(sortOrder);
+			Logger.Get(req)
 			res.json(response);
 		} else {
 			const response = await Car.find(carFilter);
+			Logger.Get(req)
 			res.json(response);
 		}
 	} catch (err) {
-		console.error(err);
+		Logger.Error(req, __filename, err)
 		res.status(500).json({ error: err });
 	}
 };
