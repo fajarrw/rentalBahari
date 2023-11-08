@@ -13,6 +13,23 @@ const getAllCar = async (req, res) => {
 	}
 };
 
+const getCarById = async (req,res) => {
+	try {
+        const _id = req.params.id;
+        const car = await Car.findById(_id);
+
+        // handle null car
+        if (!car) {
+            res.status(404).json({ error: 'Car not found' });
+            return;
+        }
+
+        res.status(200).json({ car: car });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+}
+
 const createCar = async (req, res) => {
 	try {
 		const { imageData, name, type, price, model, transmission, seatNumber } = await req.body
@@ -90,7 +107,7 @@ const editCar = async (req, res) => {
 			model
 		});
 		Logger.Update(req)
-		res.status(200).json({ message: 'User updated successfully' });
+		res.status(200).json({ message: 'Car updated successfully' });
 	} catch (err) {
 		Logger.Error(req, __filename, err)
 		res.status(500).json({ error: err });
@@ -194,4 +211,4 @@ const searchAvailableCar = async (req, res) => {
 	}
 };
 
-module.exports = { getAllCar, createCar, deleteCar, editCar, searchCar, searchAvailableCar };
+module.exports = { getAllCar, getCarById, createCar, deleteCar, editCar, searchCar, searchAvailableCar };
