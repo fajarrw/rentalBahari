@@ -141,13 +141,13 @@ const searchCar = async (req, res) => {
 		if (sortBy && order) {
 			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
 			const sortOrder = { [sortBy]: orderCode };
-			const response = await Car.find(filter).sort(sortOrder);
+			const car = await Car.find(filter).sort(sortOrder);
 			Logger.Get(req)
-			res.json(response);
+			res.json({ car });
 		} else {
-			const response = await Car.find(filter);
+			const car = await Car.find(filter);
 			Logger.Get(req)
-			res.json(response);
+			res.json({ car });
 		}
 	} catch (err) {
 		Logger.Error(req, __filename, err)
@@ -197,13 +197,13 @@ const searchAvailableCar = async (req, res) => {
 		if (sortBy && order) {
 			const orderCode = parseInt(order); // order value has to be either 1 (asc) or -1 (desc)
 			const sortOrder = { [sortBy]: orderCode };
-			const response = await Car.find(carFilter).sort(sortOrder);
+			const car = await Car.find(carFilter).sort(sortOrder);
 			Logger.Get(req)
-			res.json(response);
+			res.json({ car });
 		} else {
-			const response = await Car.find(carFilter);
+			const car = await Car.find(carFilter);
 			Logger.Get(req)
-			res.json(response);
+			res.json({ car });
 		}
 	} catch (err) {
 		Logger.Error(req, __filename, err)
