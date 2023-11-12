@@ -116,8 +116,10 @@ const editCar = async (req, res) => {
 
 const searchCar = async (req, res) => {
 	try {
-		const { model, type, maxPrice, minPrice, order, sortBy } = req.query;
+		var { model, type, transmission, maxPrice, minPrice, order, sortBy } = req.query;
 		var filter = {};
+
+		transmission = transmission.split(",");
 
 		// make a filter consisting of every inputted query 
 		if (model) {
@@ -125,6 +127,9 @@ const searchCar = async (req, res) => {
 		}
 		if (type) {
 			filter = { ...filter, type }
+		}
+		if (transmission) {
+			filter = { ...filter, transmission }
 		}
 
 		if (maxPrice && minPrice) {
