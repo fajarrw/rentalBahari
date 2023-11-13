@@ -124,10 +124,11 @@ const searchCar = async (req, res) => {
 			filter = { ...filter, model }
 		}
 		if (type) {
+			type = type.split(",")
 			filter = { ...filter, type }
 		}
 		if (transmission) {
-			transmission = transmission.split(",");
+			transmission = transmission.split(",")
 			filter = { ...filter, transmission }
 		}
 
