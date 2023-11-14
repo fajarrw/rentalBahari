@@ -31,6 +31,26 @@ const getAssuranceById  = async (req, res) => {
 	}
 };
 
+const getAssuranceByUserId  = async (req, res) => {
+	try {
+		const _id = req.params.id
+    const user = await User.findById(_id)
+		const assurance = await Assurance.findById(user.assuranceId)
+    
+    const outJSON = Object.assign( {}, {assurance}, { username: user.username })
+    
+		// handle null user
+		if (!assurance) {
+			res.status(404).json({ error: 'Assurance not found' })
+			return
+		}
+		res.status(200).json( outJSON )
+	
+  } catch (err) {
+		res.status(500).json({ error: err })
+	}
+};
+
 //create
 const createAssurance = async (req, res) => {
     try {
@@ -144,4 +164,4 @@ const editAssurance = async (req, res) => {
 };
 
 
-module.exports = {getAllAssurance, getAssuranceById, createAssurance, deleteAssurance, editAssurance};
+module.exports = {getAllAssurance, getAssuranceById, getAssuranceByUserId, createAssurance, deleteAssurance, editAssurance};
