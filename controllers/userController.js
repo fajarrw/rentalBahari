@@ -89,7 +89,7 @@ const editUser = async (req, res, next) => {
             return
         }
         await User.updateOne({ _id: _id }, {
-            username: username,
+            name: username,
             email: email,
             password: password,
             telp: telp,
