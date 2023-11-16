@@ -6,8 +6,8 @@ const User = require('../models/userModel')
 const Admin = require('../models/adminModel')
 
 router.post('/', async (req, res) => {
-    const { email, password } = await req.body
-    const user = await User.findOne({ email: email })
+    const { username, password } = await req.body
+    const user = await User.findOne({ username: username })
     if (!user) return res.status(404).send({
         message: 'User not found'
     })
@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
         if (!same) {
             return res.status(403).send({ message: 'wrong password' })
         }
-        const userData = { email: user.email, password: user.password, role: 'user' }
+        const userData = { username: user.username, password: user.password, role: 'user' }
         const token = jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET)
         res.json({ accessToken: token, role: 'user' })
     })
