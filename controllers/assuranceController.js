@@ -34,14 +34,14 @@ const getAssuranceById  = async (req, res) => {
 const getAssuranceByUserId  = async (req, res) => {
 	try {
 		const _id = req.params.id
-    const user = await User.findById(_id)
+    	const user = await User.findById(_id)
 		const assurance = await Assurance.findById(user.assuranceId)
     
-    const outJSON = Object.assign( {}, {assurance}, { username: user.username, telp: user.telp })
+    	const outJSON = Object.assign( {}, {assurance}, { name:user.name, username: user.username, telp: user.telp })
     
 		// handle null user
 		if (!assurance) {
-			res.status(404).json({ error: 'Assurance not found' })
+			res.status(200).json(outJSON)
 			return
 		}
 		res.status(200).json( outJSON )
