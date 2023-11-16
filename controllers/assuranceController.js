@@ -31,10 +31,10 @@ const getAssuranceById  = async (req, res) => {
 	}
 };
 
-const getAssuranceByUserId  = async (req, res) => {
+const getAssuranceByUsername  = async (req, res) => {
 	try {
-		const _id = req.params.id
-    	const user = await User.findById(_id)
+		const name = req.params.name
+    	const user = await User.findOne({ username: name })
 		const assurance = await Assurance.findById(user.assuranceId)
     
     	const outJSON = Object.assign( {}, {assurance}, { name:user.name, username: user.username, telp: user.telp })
@@ -164,4 +164,4 @@ const editAssurance = async (req, res) => {
 };
 
 
-module.exports = {getAllAssurance, getAssuranceById, getAssuranceByUserId, createAssurance, deleteAssurance, editAssurance};
+module.exports = {getAllAssurance, getAssuranceById, getAssuranceByUsername, createAssurance, deleteAssurance, editAssurance};
