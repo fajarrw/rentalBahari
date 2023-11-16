@@ -37,7 +37,7 @@ const getAssuranceByUsername  = async (req, res) => {
     	const user = await User.findOne({ username: name })
 		const assurance = await Assurance.findById(user.assuranceId)
     
-    	const outJSON = Object.assign( {}, {assurance}, { name:user.name, username: user.username, telp: user.telp })
+    	const outJSON = Object.assign( {}, {assurance}, {user})
     
 		// handle null user
 		if (!assurance) {
@@ -54,15 +54,15 @@ const getAssuranceByUsername  = async (req, res) => {
 //create
 const createAssurance = async (req, res) => {
     try {
-		const { alamat, nik, foto_ktp, userID } = req.body;
+		const { alamat, nik, foto_ktp , username} = req.body;
 
 		// Input validation
-		if (!alamat || !nik || !foto_ktp || !userID) {
+		if (!alamat || !nik || !foto_ktp) {
 			return res.status(400).json({ error: "Bad request. Missing required fields" });
 		}
 	
 		// Check the existence of user
-		const user = await User.findById(userID);
+		const user = await User.findByOne({username: username});
 		if (!user) {
 			res.status(400).json({ error: "Bad request. User does not exist" });
 			return;
@@ -120,29 +120,23 @@ const deleteAssurance = async (req, res) => {
 //edit
 const editAssurance = async (req, res) => {
 	try {
-    //validate main keys
-		if (!req.params.id || !req.body.nik || !req.body.foto_ktp || !req.body.alamat) {
-			res.status(400).json({ message: "Bad request. Missing required fields" });
-			return;
-		}
 
-    //validate alamat json
-    const schema = {
-		type: 'object',
-		properties: {
-        jalan: { type: 'string' },
-        kelurahan: { type: 'string' },
-        kecamatan: { type: 'string' },
-        kota: { type: 'string' },
-        provinsi: { type: 'string' },
-		},
-		required: ['jalan', 'kelurahan', 'kecamatan', 'kota', 'provinsi'],
-    };
-    const validator = new Validator();
-    if (!validator.validate(req.body.alamat, schema).valid){
-		res.status(400).json({ message: "Missing alamat attribute or unmatched schema" })
-		return;
-    }
+    // //validate alamat json
+    // const schema = {
+	// 	type: 'object',
+	// 	properties: {
+    //     jalan: { type: 'string' },
+    //     kelurahan: { type: 'string' },
+    //     kecamatan: { type: 'string' },
+    //     kota: { type: 'string' },
+    //     provinsi: { type: 'string' },
+	// 	},
+    // };
+    // const validator = new Validator();
+    // if (!validator.validate(req.body.alamat, schema).valid){
+	// 	res.status(400).json({ message: "Missing alamat attribute or unmatched schema" })
+	// 	return;
+    // }
 
 		const _id = req.params.id;
 		const { alamat, nik, foto_ktp } = req.body;
@@ -163,5 +157,24 @@ const editAssurance = async (req, res) => {
 	}
 };
 
+const editProfile = async (req, res) => {
+	try {
+		const { user, alamat, nik, foto_ktp } = req.body;
+		const userTarget = await User.findByOne({username: user.username});
 
-module.exports = {getAllAssurance, getAssuranceById, getAssuranceByUsername, createAssurance, deleteAssurance, editAssurance};
+		if (!userTarget.assuranceId) {
+			createAssurance({body:{alamat:alamat, nik:nik, foto_ktp}}, res);
+		}
+		else {
+			editAssurance({params:{id:userTarget.assuranceId}, body:{alamat:alamat, nik:nik, foto_ktp}}, res);
+		}
+
+
+
+	} catch (err) {
+		console.error({ error: err });
+		res.status(500).json({ error: err });
+	}
+};
+
+module.exports = {getAllAssurance, getAssuranceById, getAssuranceByUsername, createAssurance, deleteAssurance, editAssurance, editProfile};
