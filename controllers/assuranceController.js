@@ -37,7 +37,7 @@ const getAssuranceByUsername  = async (req, res) => {
     	const user = await User.findOne({ username: name })
 		const assurance = await Assurance.findById(user.assuranceId)
     
-    	const outJSON = Object.assign( {}, {assurance}, {user})
+    	const outJSON = Object.assign( {}, {assurance}, { userId:user._id, name:user.name, username: user.username, telp: user.telp })
     
 		// handle null user
 		if (!assurance) {
