@@ -30,10 +30,10 @@ const getUserById = async (req, res, next) => {
 
 const addUser = async (req, res, next) => {
     try {
-        let { username, email, password, telp } = await req.body
+        let { name, username, email, password, telp } = await req.body
         const SALT = 10
         //input validation
-        if (!username || !email || !password || !telp) {
+        if (!name || !username || !email || !password || !telp) {
             return res.status(400).send({ error: 'Bad request. Missing required fields' })
         }
 
@@ -42,6 +42,7 @@ const addUser = async (req, res, next) => {
 
         bcrypt.hash(password, SALT, async (err, hash) => {
             const userData = {
+                name,
                 username,
                 email,
                 password: hash,
