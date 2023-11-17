@@ -14,17 +14,20 @@ const getAllRent = async (req, res) => {
 
 const createRent = async (req, res) => {
 	try {
-		const { carID, customerID, start, end, status } = await req.body
+		const { carID, start, end, status } = await req.body
+		const customerUsername = req.userData.username
+		
+		//check the existence of user
+		const customer = await User.findOne({ username: customerUsername })
+		const customerID = customer._id
 
-		//input validation
 		if (!carID || !customerID || !start || !end || !status) {
 			res.status(400).json({ error: "Bad request. Missing required fields" })
 			return
 		}
-		
-		//check the existence of car and user
+
+		//check the existence of car
 		const car = await Car.findById(carID)
-		const customer = await User.findById(customerID)
 		if (!car || !customer) {
 			res.status(400).json({ error: "Bad request. Car or user does not exist" })
 			return
@@ -35,8 +38,8 @@ const createRent = async (req, res) => {
 			carID,
 			customerID,
 			start,
-            end,
-            status,
+			end,
+			status,
 		}
 
 		//save rent data
@@ -89,13 +92,13 @@ const editRent = async (req, res) => {
 			return;
 		}
 		await Rent.updateOne({ _id: _id }, {
-            carID,
-            customerID,
-            start,
-            end,
-            status
-        });
-        res.status(200).json({ message: 'Rent updated successfully' });
+			carID,
+			customerID,
+			start,
+			end,
+			status
+		});
+		res.status(200).json({ message: 'Rent updated successfully' });
 	} catch (err) {
 		console.error({ error: err });
 		res.status(500).json({ error: err });
@@ -110,7 +113,7 @@ const searchRent = async (req, res) => {
 		// make a filter consisting of every inputted query
 		if (_id) {
 			filter = { ...filter, _id }
-		} 
+		}
 		if (carID) {
 			filter = { ...filter, carID }
 		}
@@ -122,10 +125,12 @@ const searchRent = async (req, res) => {
 		}
 
 		if (start && end) {
-			filter = { ...filter, $or: [
-				{ start: { $gte: new Date(start) } },
-				{ end: { $lte: new Date(end) } }
-			]}
+			filter = {
+				...filter, $or: [
+					{ start: { $gte: new Date(start) } },
+					{ end: { $lte: new Date(end) } }
+				]
+			}
 		}
 
 		// sort if user wants to sort. otherwise, don't
