@@ -9,6 +9,6 @@ router.get('/user/:name', assuranceController.getAssuranceByUsername);
 router.post('/create', assuranceController.createAssurance);
 router.delete('/:id', assuranceController.deleteAssurance);
 router.put('/:id', assuranceController.editAssurance);
-router.put('/profile', assuranceController.editProfile)
+router.post('/profile', assuranceController.editProfile);
 
 module.exports = router;
