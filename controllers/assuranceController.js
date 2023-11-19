@@ -41,6 +41,15 @@ const getAssuranceByUsername  = async (req, res) => {
     
 		// handle null user
 		if (!assurance) {
+			outJSON.assurance = {alamat: {
+				jalan: "",
+				kelurahan: "",
+				kecamatan: "",
+				kota: "",
+				provinsi: "",
+			  },
+			  nik: "",
+			  foto_ktp: "an_image"}
 			res.status(200).json(outJSON)
 			return
 		}
@@ -60,7 +69,6 @@ const createAssurance = async (req, res) => {
 		if (!alamat || !nik || !foto_ktp) {
 			return res.status(400).json({ error: "Bad request. Missing required fields" });
 		}
-		console.log(username)
 		// Check the existence of user
 		const user = await User.findOne({username: username});
 		if (!user) {
@@ -159,24 +167,23 @@ const editAssurance = async (req, res) => {
 
 const editProfile = async (req, res) => {
 	try {
-		const { user, alamat, nik, foto_ktp } = req.body;
-		const userTarget = await User.findOne({username: user.username});
-
+		const { assurance, name, telp, userId, username } = req.body;
+		const userTarget = await User.findOne({username: username});
 		if (!userTarget.assuranceId) {
-			await User.updateOne({ username: user.username }, {
-				name: user.username,
-				telp: user.telp,
+			await User.updateOne({ username: username }, {
+				name: name,
+				telp: telp,
 				updatedAt: Date.now()
 			})
-			await createAssurance({body:{alamat:alamat, nik:nik, foto_ktp, username:user.username}}, res);
+			await createAssurance({body:{alamat:assurance.alamat, nik:assurance.nik, foto_ktp:assurance.foto_ktp, username}}, res);
 		}
 		else {
-			await User.updateOne({ username: user.username }, {
-				name: user.username,
-				telp: user.telp,
+			await User.updateOne({ username: username }, {
+				name: name,
+				telp: telp,
 				updatedAt: Date.now()
 			})
-			await editAssurance({params:{id:userTarget.assuranceId}, body:{alamat:alamat, nik:nik, foto_ktp}}, res);
+			await editAssurance({params:{id:userTarget.assuranceId}, body:{alamat:assurance.alamat, nik:assurance.nik, foto_ktp:assurance.foto_ktp}}, res);
 		}
 
 	} catch (err) {
