@@ -27,12 +27,15 @@ router.post('/admin', async (req, res) => {
     if (!admin) return res.status(404).send({
         message: 'Admin not found'
     })
-    bcrypt.compare(password, admin.password, (err, same) => {
+    bcrypt.compare(password, admin.password, async (err, same) => {
         if (!same) {
             return res.status(403).send({ message: 'wrong password' })
         }
         const userData = { username: admin.username, password: admin.password, role: 'admin' }
         const token = jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET)
+        await Admin.updateOne({ _id: admin._id }, {
+            lastLogin: Date.now()
+        })
         res.json({ accessToken: token, role: 'admin' })
     })
 })
