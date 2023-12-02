@@ -16,7 +16,7 @@ const createRent = async (req, res) => {
 	try {
 		const { carID, start, end, status } = await req.body
 		const customerUsername = req.userData.username
-		
+
 		//check the existence of user
 		const customer = await User.findOne({ username: customerUsername })
 		const customerID = customer._id
@@ -149,4 +149,26 @@ const searchRent = async (req, res) => {
 	}
 };
 
-module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent };
+const finishRent = async (req, res) => {
+	try {
+		if (!req.params.id) {
+			res.status(400).json({ message: "Bad request. Missing required fields" });
+			return;
+		}
+		const { id } = req.params;
+		const rentToEdit = await Rent.findById(id);
+		if (!rentToEdit) {
+			res.status(404).json({ message: "Rent does not exist" });
+			return;
+		}
+		await Rent.updateOne({ _id: id }, {
+			status: 'off'
+		});
+		res.status(200).json({ message: 'Rent updated successfully' });
+	} catch (err) {
+		console.error({ error: err });
+		res.status(500).json({ error: err });
+	}
+}
+
+module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent, finishRent };
