@@ -10,5 +10,6 @@ router.delete("/delete", rentController.deleteRent);
 router.put("/edit", rentController.editRent);
 router.put("/finish/:id", rentController.finishRent);
 router.get("/search", rentController.searchRent);
+router.post("/search/name", rentController.getRentByUsername);
 
 module.exports = router;
