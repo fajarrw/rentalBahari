@@ -13,6 +13,7 @@ const rentRoute = require('./routes/rentRoute')
 const authRoute = require('./routes/auth')
 
 app.use(cors());
+app.options('*', cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/api/car', carRoute);
