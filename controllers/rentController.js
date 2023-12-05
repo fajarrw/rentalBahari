@@ -208,6 +208,7 @@ const getRentByUsername = async (req, res) => {
 			model: carData.model,
 			transmission: carData.transmission,
 			seatNumber: carData.seatNumber,
+			imageData: carData.imageData
 			},
 			start: rent.start,
 			end: rent.end,
