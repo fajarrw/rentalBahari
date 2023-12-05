@@ -196,7 +196,7 @@ const getRentByUsername = async (req, res) => {
 		// Combine rents and car data
 		const rentsWithCarData = rents.map(rent => {
 		const carData = cars.find(car => car._id.toString() === rent.carID.toString());
-		const days = Math.ceil((new Date(rent.end) - new Date(rent.start)) / (1000 * 60 * 60 * 24));
+		const days = 1 + Math.ceil((new Date(rent.end) - new Date(rent.start)) / (1000 * 60 * 60 * 24));
 		const totalPrice = days * carData.price;
 
 		return {
