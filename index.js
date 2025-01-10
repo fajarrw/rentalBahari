@@ -3,7 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
-const cookieParser = require('cookie-parser'); // Add this line
+const cookieParser = require('cookie-parser');
 require("dotenv").config();
 
 const app = express();
@@ -19,10 +19,16 @@ const limiter = rateLimit({
     max: 100 // limit each IP to n requests per windowMs
 });
 
+// Configure CORS to allow requests from http://localhost:3000
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true, // Allow cookies to be sent
+};
+
 app.use(mongoSanitize());
 app.use(limiter);
-app.use(cors());
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());

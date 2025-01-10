@@ -8,7 +8,7 @@ const authenticateToken2 = require('../middleware/authToken2');
 router.get('/all', authenticateToken, assuranceController.getAllAssurance);
 // router.get('/:id', authenticateToken2, assuranceController.getAssuranceById);
 // router.get('/user/:name', authenticateToken, assuranceController.getAssuranceByUsername);
-router.get('/', authenticateToken2, assuranceController.getAssuranceByToken);
+router.get('/', authenticateToken2, assuranceController.getAssurance);
 router.post('/create', authenticateToken2, assuranceController.createAssurance);
 router.delete('/:id', authenticateToken2, assuranceController.deleteAssurance);
 router.put('/:id', authenticateToken2, assuranceController.editAssurance);

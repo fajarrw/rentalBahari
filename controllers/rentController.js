@@ -227,4 +227,49 @@ const getRentByUsername = async (req, res) => {
 	}
 }
 
-module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent, finishRent, getRentByUsername };
+const getRent = async (req, res) => {
+	try {
+		// Fetch all rents where customerID is equal to the authenticated user's ID
+		const rents = await Rent.find({ customerID: req.userData._id });
+
+		if (!rents || rents.length === 0) {
+			return res.status(200).json({ rents });
+		}
+
+		// Extract carIDs from the rents
+		const carIds = rents.map(rent => rent.carID);
+
+		// Fetch car data for the extracted carIDs
+		const cars = await Car.find({ _id: { $in: carIds } });
+
+		// Combine rents and car data
+		const rentsWithCarData = rents.map(rent => {
+			const carData = cars.find(car => car._id.toString() === rent.carID.toString());
+			const days = 1 + Math.ceil((new Date(rent.end) - new Date(rent.start)) / (1000 * 60 * 60 * 24));
+			const totalPrice = days * carData.price;
+
+			return {
+				...rent._doc, // Existing rent data
+				car: {
+					name: carData.name,
+					type: carData.type,
+					price: carData.price,
+					model: carData.model,
+					transmission: carData.transmission,
+					seatNumber: carData.seatNumber,
+					imageData: carData.imageData
+				},
+				start: rent.start,
+				end: rent.end,
+				totalPrice
+			};
+		});
+
+		res.status(200).json({ rents: rentsWithCarData });
+
+	} catch (err) {
+		res.status(500).json({ error: err });
+	}
+}
+
+module.exports = { getAllRent, getRent, createRent, deleteRent, editRent, searchRent, finishRent };

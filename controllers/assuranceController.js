@@ -65,7 +65,7 @@ const getAllAssurance = async (req, res) => {
 // 	}
 // };
 
-const getAssuranceByToken = async (req, res) => {
+const getAssurance = async (req, res) => {
 	try {
 		const assurance = await Assurance.findById(req.assuranceId);
 
@@ -224,4 +224,4 @@ const editProfile = async (req, res) => {
 	}
 };
 
-module.exports = { getAllAssurance, getAssuranceByToken, createAssurance, deleteAssurance, editAssurance, editProfile };
+module.exports = { getAllAssurance, getAssurance, createAssurance, deleteAssurance, editAssurance, editProfile };
