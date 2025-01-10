@@ -1,15 +1,10 @@
-const Admin = require('../models/adminModel')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
-const getAllAdmin = async (req, res) => {
-    try {
-        const admin = await Admin.find({})
-        res.status(200).json({ admin: admin })
-    } catch (err) {
-        console.error(err)
-        res.status(400).json({ message: err });
-    }
-}
+const Admin = require('../models/adminModel');
+
+const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_ADMIN_NOT_FOUND = 'Admin not found';
+const ERR_ADMIN_ALREADY_EXISTS = 'Admin already exists';
 
 const getAdminById = async (req, res) => {
     try {
@@ -18,7 +13,7 @@ const getAdminById = async (req, res) => {
 
         // handle null admin
         if (!admin) {
-            res.status(404).json({ error: 'Admin not found' })
+            res.status(404).json({ error: ERR_ADMIN_NOT_FOUND })
             return
         }
 
@@ -33,7 +28,7 @@ const deleteAdmin = async (req, res) => {
         const _id = req.params.id
         const adminToDelete = await Admin.findById(_id)
         if (!adminToDelete) {
-            res.status(404).json({ message: 'Admin not exists' })
+            res.status(404).json({ message: ERR_ADMIN_NOT_FOUND })
             return
         }
         await Admin.deleteOne({ _id })
@@ -50,11 +45,11 @@ const createAdmin = async (req, res) => {
         const SALT = 10
         //input validation
         if (!username || !password) {
-            res.status(400).json({ error: "Bad request. Missing required fields" })
+            res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS })
             return
         }
         const admin = await Admin.findOne({ username: username })
-        if (admin !== null) return res.status(409).send({ message: "Admin already exists" })
+        if (admin !== null) return res.status(409).send({ message: ERR_ADMIN_ALREADY_EXISTS })
 
         bcrypt.hash(password, SALT, async (err, hash) => {
             const adminData = {
@@ -80,7 +75,7 @@ const editAdmin = async (req, res) => {
         const { username, password } = req.body
         const adminToEdit = await Admin.findById(_id)
         if (!adminToEdit) {
-            res.status(404).json({ message: 'Admin does not exist' })
+            res.status(404).json({ message: ERR_ADMIN_NOT_FOUND })
             return
         }
         await Admin.updateOne({ _id: _id }, {
@@ -94,4 +89,4 @@ const editAdmin = async (req, res) => {
     }
 }
 
-module.exports = { getAllAdmin, getAdminById, createAdmin, deleteAdmin, editAdmin }
+module.exports = { getAdminById, createAdmin, deleteAdmin, editAdmin }

@@ -2,6 +2,10 @@ const Rent = require('../models/rentModel');
 const Car = require('../models/carModel');
 const User = require('../models/userModel');
 
+const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_CAR_OR_USER_NOT_FOUND = 'Bad request. Car or user does not exist';
+const ERR_RENT_NOT_FOUND = 'Rent not found';
+
 const getAllRent = async (req, res) => {
 	try {
 		const rent = await Rent.find({});
@@ -22,14 +26,14 @@ const createRent = async (req, res) => {
 		const customerID = customer._id
 
 		if (!carID || !customerID || !start || !end || !status) {
-			res.status(400).json({ error: "Bad request. Missing required fields" })
+			res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS })
 			return
 		}
 
 		//check the existence of car
 		const car = await Car.findById(carID)
 		if (!car || !customer) {
-			res.status(400).json({ error: "Bad request. Car or user does not exist" })
+			res.status(400).json({ error: ERR_CAR_OR_USER_NOT_FOUND })
 			return
 		}
 
@@ -57,7 +61,7 @@ const deleteRent = async (req, res) => {
 	try {
 		//input validation
 		if (!req.body._id) {
-			res.status(400).json({ message: "Bad request. Missing required fields" });
+			res.status(400).json({ message: ERR_MISSING_REQUIRED_FIELDS });
 			return;
 		}
 
@@ -65,7 +69,7 @@ const deleteRent = async (req, res) => {
 		const _id = req.body._id;
 		const rentToDelete = await Rent.findById(_id);
 		if (!rentToDelete) {
-			res.status(404).json({ message: "Rent does not exist" });
+			res.status(404).json({ message: ERR_RENT_NOT_FOUND });
 			return;
 		}
 
@@ -81,14 +85,14 @@ const deleteRent = async (req, res) => {
 const editRent = async (req, res) => {
 	try {
 		if (!req.body._id || !req.body.start || !req.body.end || !req.body.status) {
-			res.status(400).json({ message: "Bad request. Missing required fields" });
+			res.status(400).json({ message: ERR_MISSING_REQUIRED_FIELDS });
 			return;
 		}
 		const _id = req.body._id;
 		const { carID, customerID, start, end, status } = req.body;
 		const rentToEdit = await Rent.findById(_id);
 		if (!rentToEdit) {
-			res.status(404).json({ message: "Rent does not exist" });
+			res.status(404).json({ message: ERR_RENT_NOT_FOUND });
 			return;
 		}
 		await Rent.updateOne({ _id: _id }, {
@@ -152,13 +156,13 @@ const searchRent = async (req, res) => {
 const finishRent = async (req, res) => {
 	try {
 		if (!req.params.id) {
-			res.status(400).json({ message: "Bad request. Missing required fields" });
+			res.status(400).json({ message: ERR_MISSING_REQUIRED_FIELDS });
 			return;
 		}
 		const { id } = req.params;
 		const rentToEdit = await Rent.findById(id);
 		if (!rentToEdit) {
-			res.status(404).json({ message: "Rent does not exist" });
+			res.status(404).json({ message: ERR_RENT_NOT_FOUND });
 			return;
 		}
 		await Rent.updateOne({ _id: id }, {
@@ -176,15 +180,15 @@ const getRentByUsername = async (req, res) => {
 		const name = req.body.name
 		const user = await User.findOne({ username: name })
 
-    	if (!user) {
+		if (!user) {
 			return res.status(404).json({ error: name + " not found" });
-		  }
-	  
+		}
+
 		// Fetch all rents where customerID is equal to userId
 		const rents = await Rent.find({ customerID: user._id });
 
 		if (!rents || rents.length === 0) {
-		return res.status(200).json({ rents });
+			return res.status(200).json({ rents });
 		}
 
 		// Extract carIDs from the rents
@@ -195,25 +199,25 @@ const getRentByUsername = async (req, res) => {
 
 		// Combine rents and car data
 		const rentsWithCarData = rents.map(rent => {
-		const carData = cars.find(car => car._id.toString() === rent.carID.toString());
-		const days = 1 + Math.ceil((new Date(rent.end) - new Date(rent.start)) / (1000 * 60 * 60 * 24));
-		const totalPrice = days * carData.price;
+			const carData = cars.find(car => car._id.toString() === rent.carID.toString());
+			const days = 1 + Math.ceil((new Date(rent.end) - new Date(rent.start)) / (1000 * 60 * 60 * 24));
+			const totalPrice = days * carData.price;
 
-		return {
-			...rent._doc, // Existing rent data
-			car: {
-			name: carData.name,
-			type: carData.type,
-			price: carData.price,
-			model: carData.model,
-			transmission: carData.transmission,
-			seatNumber: carData.seatNumber,
-			imageData: carData.imageData
-			},
-			start: rent.start,
-			end: rent.end,
-			totalPrice
-		};
+			return {
+				...rent._doc, // Existing rent data
+				car: {
+					name: carData.name,
+					type: carData.type,
+					price: carData.price,
+					model: carData.model,
+					transmission: carData.transmission,
+					seatNumber: carData.seatNumber,
+					imageData: carData.imageData
+				},
+				start: rent.start,
+				end: rent.end,
+				totalPrice
+			};
 		});
 
 		res.status(200).json({ rents: rentsWithCarData });
@@ -223,4 +227,4 @@ const getRentByUsername = async (req, res) => {
 	}
 }
 
-module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent, finishRent, getRentByUsername};
+module.exports = { getAllRent, createRent, deleteRent, editRent, searchRent, finishRent, getRentByUsername };

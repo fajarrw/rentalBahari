@@ -2,6 +2,9 @@ const Logger = require('../lib/logger');
 const Car = require('../models/carModel');
 const Rent = require('../models/rentModel');
 
+const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_CAR_NOT_FOUND = 'Car not found';
+
 const getAllCar = async (req, res) => {
 	try {
 		const car = await Car.find({});
@@ -20,7 +23,7 @@ const getCarById = async (req, res) => {
 
 		// handle null car
 		if (!car) {
-			res.status(404).json({ error: 'Car not found' });
+			res.status(404).json({ error: ERR_CAR_NOT_FOUND });
 			return;
 		}
 
@@ -36,7 +39,7 @@ const createCar = async (req, res) => {
 		//input validation
 		if (!name || !type || !price || !model || !imageData || !seatNumber || !transmission) {
 			Logger.BadRequest(req)
-			res.status(400).json({ error: "Bad request. Missing required fields" })
+			res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS })
 			return
 		}
 
@@ -66,14 +69,14 @@ const deleteCar = async (req, res) => {
 	try {
 		if (!req.body._id) {
 			Logger.BadRequest(req)
-			res.status(400).json({ message: "Bad request. Missing required fields" });
+			res.status(400).json({ message: ERR_MISSING_REQUIRED_FIELDS });
 			return;
 		}
 		const _id = req.body._id;
 		const carToDelete = await Car.findById(_id);
 		if (!carToDelete) {
 			Logger.NotFound(req)
-			res.status(404).json({ message: "Car does not exist" });
+			res.status(404).json({ message: ERR_CAR_NOT_FOUND });
 			return;
 		}
 		await Car.deleteOne({ _id: _id });
@@ -89,7 +92,7 @@ const editCar = async (req, res) => {
 	try {
 		if (!req.body._id || !req.body.name || !req.body.price || !req.body.model) {
 			Logger.BadRequest(req);
-			res.status(400).json({ message: "Bad request. Missing required fields" });
+			res.status(400).json({ message: ERR_MISSING_REQUIRED_FIELDS });
 			return;
 		}
 		const _id = req.body._id;
@@ -97,7 +100,7 @@ const editCar = async (req, res) => {
 		const carToEdit = await Car.findById(_id);
 		if (!carToEdit) {
 			Logger.NotFound(req)
-			res.status(404).json({ message: "Car does not exist" });
+			res.status(404).json({ message: ERR_CAR_NOT_FOUND });
 			return;
 		}
 		await Car.updateOne({ _id: _id }, {
@@ -166,7 +169,7 @@ const searchAvailableCar = async (req, res) => {
 
 		if (!start || !end) {
 			Logger.BadRequest(req)
-			res.status(400).json({ message: "Bad request. Missing required fields" });
+			res.status(400).json({ message: ERR_MISSING_REQUIRED_FIELDS });
 			return;
 		}
 
