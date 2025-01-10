@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
+const cookieParser = require('cookie-parser'); // Add this line
 require("dotenv").config();
 
 const app = express();
@@ -24,11 +25,15 @@ app.use(cors());
 app.options('*', cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+app.use(cookieParser());
+
 app.use('/api/car', carRoute);
 app.use('/api/users', userRoute);
 app.use('/api/assurance', assuranceRoute);
 app.use('/api/admin', adminRoute);
 app.use('/api/rent', rentRoute);
 app.use('/api/auth', authRoute);
+
 const port = process.env.PORT || 5000;
+
 app.listen(port, () => console.log(`Server is running on port ${port}`));
