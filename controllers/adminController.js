@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 const Admin = require('../models/adminModel');
 
-const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_MISSING_REQUIRED_FIELDS = 'Missing required fields';
 const ERR_ADMIN_NOT_FOUND = 'Admin not found';
 const ERR_ADMIN_ALREADY_EXISTS = 'Admin already exists';
 
@@ -77,6 +77,9 @@ const editAdmin = async (req, res) => {
         if (!adminToEdit) {
             res.status(404).json({ message: ERR_ADMIN_NOT_FOUND })
             return
+        }
+        if (password) {
+            req.body.password = await bcrypt.hash(password, 10);
         }
         await Admin.updateOne({ _id: _id }, {
             username: username,

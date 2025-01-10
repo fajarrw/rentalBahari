@@ -2,7 +2,7 @@ const Logger = require('../lib/logger');
 const Car = require('../models/carModel');
 const Rent = require('../models/rentModel');
 
-const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_MISSING_REQUIRED_FIELDS = 'Missing required fields';
 const ERR_CAR_NOT_FOUND = 'Car not found';
 
 const getAllCar = async (req, res) => {

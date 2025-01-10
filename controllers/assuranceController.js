@@ -3,7 +3,7 @@ const Validator = require('jsonschema').Validator;
 const Assurance = require('../models/assuranceModel');
 const User = require('../models/userModel');
 
-const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_MISSING_REQUIRED_FIELDS = 'Missing required fields';
 const ERR_ASSURANCE_NOT_FOUND = 'Assurance not found';
 const ERR_USER_NOT_FOUND = 'User not found';
 
@@ -17,30 +17,59 @@ const getAllAssurance = async (req, res) => {
 	}
 };
 
-const getAssuranceById = async (req, res) => {
+// const getAssuranceById = async (req, res) => {
+// 	try {
+// 		const _id = req.params.id
+// 		const assurance = await Assurance.findById(_id)
+
+// 		// handle null user
+// 		if (!assurance) {
+// 			res.status(404).json({ error: ERR_ASSURANCE_NOT_FOUND })
+// 			return
+// 		}
+
+// 		res.status(200).json({ assurance: assurance })
+// 	} catch (err) {
+// 		res.status(500).json({ error: err })
+// 	}
+// };
+
+// const getAssuranceByUsername = async (req, res) => {
+// 	try {
+// 		const name = req.params.name
+// 		const user = await User.findOne({ username: name })
+// 		const assurance = await Assurance.findById(user.assuranceId)
+
+// 		const outJSON = Object.assign({}, { assurance }, { userId: user._id, name: user.name, username: user.username, telp: user.telp })
+
+// 		// handle null user
+// 		if (!assurance) {
+// 			outJSON.assurance = {
+// 				alamat: {
+// 					jalan: "",
+// 					kelurahan: "",
+// 					kecamatan: "",
+// 					kota: "",
+// 					provinsi: "",
+// 				},
+// 				nik: "",
+// 				foto_ktp: "an_image"
+// 			}
+// 			res.status(200).json(outJSON)
+// 			return
+// 		}
+// 		res.status(200).json(outJSON)
+
+// 	} catch (err) {
+// 		res.status(500).json({ error: err })
+// 	}
+// };
+
+const getAssuranceByToken = async (req, res) => {
 	try {
-		const _id = req.params.id
-		const assurance = await Assurance.findById(_id)
+		const assurance = await Assurance.findById(req.assuranceId);
 
-		// handle null user
-		if (!assurance) {
-			res.status(404).json({ error: ERR_ASSURANCE_NOT_FOUND })
-			return
-		}
-
-		res.status(200).json({ assurance: assurance })
-	} catch (err) {
-		res.status(500).json({ error: err })
-	}
-};
-
-const getAssuranceByUsername = async (req, res) => {
-	try {
-		const name = req.params.name
-		const user = await User.findOne({ username: name })
-		const assurance = await Assurance.findById(user.assuranceId)
-
-		const outJSON = Object.assign({}, { assurance }, { userId: user._id, name: user.name, username: user.username, telp: user.telp })
+		const outJSON = Object.assign({}, { assurance }, { userId: req._id, name: req.name, username: req.username, telp: req.telp });
 
 		// handle null user
 		if (!assurance) {
@@ -54,16 +83,16 @@ const getAssuranceByUsername = async (req, res) => {
 				},
 				nik: "",
 				foto_ktp: "an_image"
-			}
-			res.status(200).json(outJSON)
-			return
+			};
+			res.status(200).json(outJSON);
+			return;
 		}
-		res.status(200).json(outJSON)
-
+		res.status(200).json(outJSON);
 	} catch (err) {
-		res.status(500).json({ error: err })
+		console.error(err);
+		res.status(500).json({ error: err });
 	}
-};
+}
 
 const createAssurance = async (req, res) => {
 	try {
@@ -195,4 +224,4 @@ const editProfile = async (req, res) => {
 	}
 };
 
-module.exports = { getAllAssurance, getAssuranceById, getAssuranceByUsername, createAssurance, deleteAssurance, editAssurance, editProfile };
+module.exports = { getAllAssurance, getAssuranceByToken, createAssurance, deleteAssurance, editAssurance, editProfile };

@@ -2,14 +2,15 @@ const express = require("express");
 
 const router = express.Router();
 const rentController = require("../controllers/rentController");
+const authenticateToken = require("../middleware/authToken");
 const authenticateToken2 = require("../middleware/authToken2");
 
-router.get("/all", rentController.getAllRent);
+router.get("/all", authenticateToken, rentController.getAllRent);
 router.post("/create", authenticateToken2, rentController.createRent);
-router.delete("/delete", rentController.deleteRent);
-router.put("/edit", rentController.editRent);
-router.put("/finish/:id", rentController.finishRent);
-router.get("/search", rentController.searchRent);
-router.post("/search/name", rentController.getRentByUsername);
+router.delete("/delete", authenticateToken2, rentController.deleteRent);
+router.put("/edit", authenticateToken2, rentController.editRent);
+router.put("/finish/:id", authenticateToken2, rentController.finishRent);
+router.get("/search", authenticateToken2, rentController.searchRent);
+router.post("/search/name", authenticateToken2, rentController.getRentByUsername);
 
 module.exports = router;

@@ -2,8 +2,8 @@ const Rent = require('../models/rentModel');
 const Car = require('../models/carModel');
 const User = require('../models/userModel');
 
-const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
-const ERR_CAR_OR_USER_NOT_FOUND = 'Bad request. Car or user does not exist';
+const ERR_MISSING_REQUIRED_FIELDS = 'Missing required fields';
+const ERR_CAR_OR_USER_NOT_FOUND = 'Car or user does not exist';
 const ERR_RENT_NOT_FOUND = 'Rent not found';
 
 const getAllRent = async (req, res) => {
@@ -18,23 +18,23 @@ const getAllRent = async (req, res) => {
 
 const createRent = async (req, res) => {
 	try {
-		const { carID, start, end, status } = await req.body
-		const customerUsername = req.userData.username
+		const { carID, start, end, status } = await req.body;
+		const customerUsername = req.userData.username;
 
 		//check the existence of user
-		const customer = await User.findOne({ username: customerUsername })
-		const customerID = customer._id
+		const customer = await User.findOne({ username: customerUsername });
+		const customerID = customer._id;
 
 		if (!carID || !customerID || !start || !end || !status) {
-			res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS })
-			return
+			res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS });
+			return;
 		}
 
 		//check the existence of car
-		const car = await Car.findById(carID)
+		const car = await Car.findById(carID);
 		if (!car || !customer) {
-			res.status(400).json({ error: ERR_CAR_OR_USER_NOT_FOUND })
-			return
+			res.status(400).json({ error: ERR_CAR_OR_USER_NOT_FOUND });
+			return;
 		}
 
 		//prepare rent data to be saved
@@ -47,13 +47,13 @@ const createRent = async (req, res) => {
 		}
 
 		//save rent data
-		const newRent = await Rent.create(rentData)
-		const savedRentData = await newRent.save()
+		const newRent = await Rent.create(rentData);
+		const savedRentData = await newRent.save();
 
-		res.status(201).json({ message: "Rent created successfully", rent: savedRentData })
+		res.status(201).json({ message: "Rent created successfully", rent: savedRentData });
 	} catch (err) {
-		console.error(err)
-		res.status(500).json({ error: err })
+		console.error(err);
+		res.status(500).json({ error: err });
 	}
 };
 
@@ -116,16 +116,16 @@ const searchRent = async (req, res) => {
 
 		// make a filter consisting of every inputted query
 		if (_id) {
-			filter = { ...filter, _id }
+			filter = { ...filter, _id };
 		}
 		if (carID) {
-			filter = { ...filter, carID }
+			filter = { ...filter, carID };
 		}
 		if (customerID) {
-			filter = { ...filter, customerID }
+			filter = { ...filter, customerID };
 		}
 		if (status) {
-			filter = { ...filter, status }
+			filter = { ...filter, status };
 		}
 
 		if (start && end) {
@@ -134,7 +134,7 @@ const searchRent = async (req, res) => {
 					{ start: { $gte: new Date(start) } },
 					{ end: { $lte: new Date(end) } }
 				]
-			}
+			};
 		}
 
 		// sort if user wants to sort. otherwise, don't
@@ -149,7 +149,7 @@ const searchRent = async (req, res) => {
 		}
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ error: err })
+		res.status(500).json({ error: err });
 	}
 };
 
@@ -177,8 +177,8 @@ const finishRent = async (req, res) => {
 
 const getRentByUsername = async (req, res) => {
 	try {
-		const name = req.body.name
-		const user = await User.findOne({ username: name })
+		const name = req.body.name;
+		const user = await User.findOne({ username: name });
 
 		if (!user) {
 			return res.status(404).json({ error: name + " not found" });
@@ -223,7 +223,7 @@ const getRentByUsername = async (req, res) => {
 		res.status(200).json({ rents: rentsWithCarData });
 
 	} catch (err) {
-		res.status(500).json({ error: err })
+		res.status(500).json({ error: err });
 	}
 }
 

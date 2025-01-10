@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 
 const User = require('../models/userModel')
 
-const ERR_MISSING_REQUIRED_FIELDS = 'Bad request. Missing required fields';
+const ERR_MISSING_REQUIRED_FIELDS = 'Missing required fields';
 const ERR_USER_NOT_FOUND = 'User not found';
 const ERR_USER_ALREADY_EXISTS = 'User already exists';
 
