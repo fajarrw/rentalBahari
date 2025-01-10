@@ -1,15 +1,15 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt')
 
-const getAllUser = async (req, res, next) => {
-    try {
-        const users = await User.find({})
-        res.status(200).json({ users: users })
-    } catch (err) {
-        console.error(err)
-        res.status(400).json({ message: err });
-    }
-}
+// const getAllUser = async (req, res, next) => {
+//     try {
+//         const users = await User.find({})
+//         res.status(200).json({ users: users })
+//     } catch (err) {
+//         console.error(err)
+//         res.status(400).json({ message: err });
+//     }
+// }
 
 const getUserById = async (req, res, next) => {
     try {
@@ -68,7 +68,7 @@ const deleteUser = async (req, res, next) => {
         const _id = req.params.id
         const userToDelete = await User.findById(_id)
         if (!userToDelete) {
-            res.status(404).json({ message: 'User not exists' })
+            res.status(404).json({ message: 'User doesn\t exist' })
             return
         }
         await User.deleteOne({ _id: _id })
@@ -85,8 +85,11 @@ const editUser = async (req, res, next) => {
         const { username, email, password, telp } = req.body
         const userToEdit = await User.findById(_id)
         if (!userToEdit) {
-            res.status(404).json({ message: 'User not exists' })
+            res.status(404).json({ message: 'User doesn\'t exist' })
             return
+        }
+        if (password) {
+            req.body.password = await bcrypt.hash(password, 10);
         }
         await User.updateOne({ _id: _id }, {
             name: username,
@@ -102,4 +105,4 @@ const editUser = async (req, res, next) => {
     }
 }
 
-module.exports = { getAllUser, getUserById, addUser, deleteUser, editUser }
+module.exports = { getUserById, addUser, deleteUser, editUser }
