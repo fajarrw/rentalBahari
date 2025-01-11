@@ -26,7 +26,7 @@ const limiter = rateLimit({
 // };
 // For production
 const corsOptions = {
-    origin: 'https://rental-bahari-vercel.app',
+    origin: 'https://rental-bahari-fe.vercel.app',
     credentials: true, // Allow cookies to be sent
 };
 
