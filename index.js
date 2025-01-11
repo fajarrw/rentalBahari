@@ -19,9 +19,14 @@ const limiter = rateLimit({
     max: 100 // limit each IP to n requests per windowMs
 });
 
-// Configure CORS to allow requests from http://localhost:3000
+// For Development
+// const corsOptions = {
+//     origin: '*',
+//     credentials: true, // Allow cookies to be sent
+// };
+// For production
 const corsOptions = {
-    origin: '*',
+    origin: 'https://rental-bahari-vercel.app',
     credentials: true, // Allow cookies to be sent
 };
 
