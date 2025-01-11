@@ -124,15 +124,15 @@ const searchCar = async (req, res) => {
 
 		// make a filter consisting of every inputted query 
 		if (model) {
-			filter = { ...filter, model }
+			filter = { ...filter, model };
 		}
 		if (type) {
 			type = type.split(",")
-			filter = { ...filter, type }
+			filter = { ...filter, type };
 		}
 		if (transmission) {
 			transmission = transmission.split(",")
-			filter = { ...filter, transmission }
+			filter = { ...filter, transmission };
 		}
 
 		if (maxPrice && minPrice) {

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Validator = require('jsonschema').Validator;
 
 const Assurance = require('../models/assuranceModel');
@@ -67,7 +68,8 @@ const getAllAssurance = async (req, res) => {
 
 const getAssurance = async (req, res) => {
 	try {
-		const assurance = await Assurance.findById(req.assuranceId);
+		const user = await User.findById(req.userData._id);
+		const assurance = await Assurance.findById(user.assuranceId);
 
 		const outJSON = Object.assign({}, { assurance }, { userId: req._id, name: req.name, username: req.username, telp: req.telp });
 
@@ -102,6 +104,7 @@ const createAssurance = async (req, res) => {
 		if (!alamat || !nik || !foto_ktp) {
 			return res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS });
 		}
+
 		// Check the existence of user
 		const user = await User.findOne({ username: username });
 		if (!user) {
@@ -199,23 +202,58 @@ const editAssurance = async (req, res) => {
 
 const editProfile = async (req, res) => {
 	try {
-		const { assurance, name, telp, userId, username } = req.body;
-		const userTarget = await User.findOne({ username: username });
+		const { assurance, name, telp } = req.body;
+
+		// Find the target user by their ID
+		const userTarget = await User.findOne({ _id: req.userData._id });
 		if (!userTarget.assuranceId) {
-			await User.updateOne({ username: username }, {
-				name: name,
-				telp: telp,
-				updatedAt: Date.now()
-			})
-			await createAssurance({ body: { alamat: assurance.alamat, nik: assurance.nik, foto_ktp: assurance.foto_ktp, username } }, res);
+			// Update the user information
+			await User.updateOne(
+				{ _id: req.userData._id },
+				{
+					name: name,
+					telp: telp,
+					updatedAt: Date.now(),
+				}
+			);
+
+			// Create a new assurance document
+			const newAssurance = new Assurance({
+				alamat: assurance.alamat,
+				nik: assurance.nik,
+				foto_ktp: assurance.foto_ktp,
+			});
+
+			// Save the new assurance document
+			const savedAssurance = await newAssurance.save();
+
+			// Update the user with the new assurance ID
+			userTarget.assuranceId = savedAssurance._id;
+			await userTarget.save();
+
+			res.status(201).json({
+				message: "Assurance created successfully",
+				assurance: savedAssurance
+			});
 		}
 		else {
-			await User.updateOne({ username: username }, {
+			await User.updateOne({ _id: req.userData._id }, {
 				name: name,
 				telp: telp,
 				updatedAt: Date.now()
 			})
-			await editAssurance({ params: { id: userTarget.assuranceId }, body: { alamat: assurance.alamat, nik: assurance.nik, foto_ktp: assurance.foto_ktp } }, res);
+			const savedAssurance = await Assurance.updateOne(
+				{ _id: userTarget.assuranceId },
+				{
+					alamat: assurance.alamat,
+					nik: assurance.nik,
+					foto_ktp: assurance.foto_ktp
+				}
+			);
+			res.status(201).json({
+				message: "Assurance updated successfully",
+				assurance: savedAssurance
+			});
 		}
 
 	} catch (err) {

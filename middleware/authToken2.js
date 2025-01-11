@@ -9,7 +9,7 @@ const authenticateToken2 = async (req, res, next) => {
         if (userData.role !== 'user' && userData.role !== 'admin') return res.sendStatus(401);
         req.userData = userData;
         next();
-    })
-}
+    });
+};
 
 module.exports = authenticateToken2;
