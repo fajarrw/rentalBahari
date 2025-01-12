@@ -9,6 +9,22 @@ const ERR_WRONG_USERNAME_OR_PASSWORD = 'Username or password is wrong';
 const ERR_USER_NOT_FOUND = 'User not found';
 const ERR_ADMIN_NOT_FOUND = 'Admin not found';
 
+// For Development
+// const cookieConfigs = {
+//     httpOnly: true, // Prevent client-side JavaScript access
+//     // secure: true, // Only sent over HTTPS
+//     sameSite: 'Lax',
+//     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+// }
+
+// For Production
+const cookieConfigs = {
+    httpOnly: true, // Prevent client-side JavaScript access
+    secure: true, // Only sent over HTTPS
+    sameSite: 'None', // Required for cross-origin requests
+    maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+}
+
 router.post('/', async (req, res) => {
     const { username, password } = await req.body;
     const user = await User.findOne({ username: username });
@@ -21,7 +37,9 @@ router.post('/', async (req, res) => {
         }
         const userData = { _id: user._id, role: 'user' };
         const token = jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET);
-        res.json({ accessToken: token, role: 'user' });
+        res.cookie('token', token, cookieConfigs);
+        // res.json({ accessToken: token, role: 'user' });
+        res.status(200).json({ message: 'Login successful' });
     })
 })
 
@@ -37,11 +55,12 @@ router.post('/admin', async (req, res) => {
         }
         const adminData = { _id: admin._id, role: 'admin' };
         const token = jwt.sign(adminData, process.env.ACCESS_TOKEN_SECRET);
+        res.cookie('token', token, cookieConfigs);
         await Admin.updateOne({ _id: admin._id }, {
             lastLogin: Date.now()
         })
-        res.json({ accessToken: token, role: 'admin' });
-    })
+        res.json({ message: 'Login successful' });
+    });
 })
 
 module.exports = router;

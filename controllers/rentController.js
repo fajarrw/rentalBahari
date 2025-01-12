@@ -19,10 +19,10 @@ const getAllRent = async (req, res) => {
 const createRent = async (req, res) => {
 	try {
 		const { carID, start, end, status } = await req.body;
-		const customerUsername = req.userData.username;
+		// const customerUsername = req.userData._id;
 
 		//check the existence of user
-		const customer = await User.findOne({ username: customerUsername });
+		const customer = await User.findOne({ _id: req.userData._id });
 		const customerID = customer._id;
 
 		if (!carID || !customerID || !start || !end || !status) {

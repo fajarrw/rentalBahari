@@ -21,21 +21,30 @@ const limiter = rateLimit({
 
 // For Development
 // const corsOptions = {
-//     origin: '*',
+//     origin: 'http://localhost:3000',
 //     credentials: true, // Allow cookies to be sent
 // };
-// For production
+
+// For Production
 const corsOptions = {
-    origin: 'https://rental-bahari-fe.vercel.app',
+    origin: 'https://rental-bahari-fe.vercel.app', // Specify your frontend origin
     credentials: true, // Allow cookies to be sent
 };
 
 app.use(mongoSanitize());
 app.use(limiter);
+
+// Apply CORS middleware
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
+// Ensure OPTIONS preflight requests also work with CORS
+app.options(cors(corsOptions));
+
+// Body parser configurations
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+
+// Cookie parser
 app.use(cookieParser());
 
 app.use('/api/car', carRoute);
