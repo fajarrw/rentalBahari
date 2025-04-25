@@ -9,21 +9,19 @@ const ERR_WRONG_USERNAME_OR_PASSWORD = 'Username or password is wrong';
 const ERR_USER_NOT_FOUND = 'User not found';
 const ERR_ADMIN_NOT_FOUND = 'Admin not found';
 
-// For Development
-// const cookieConfigs = {
-//     httpOnly: true, // Prevent client-side JavaScript access
-//     // secure: true, // Only sent over HTTPS
-//     sameSite: 'Lax',
-//     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-// }
-
-// For Production
 const cookieConfigs = {
-    httpOnly: true, // Prevent client-side JavaScript access
-    secure: true, // Only sent over HTTPS
-    sameSite: 'None', // Required for cross-origin requests
+    // httpOnly: true, // Prevent client-side JavaScript access
+    // secure: true, // Only sent over HTTPS
+    sameSite: 'Lax',
     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
 }
+
+// const cookieConfigs = {
+//     httpOnly: true, // Prevent client-side JavaScript access
+//     secure: true, // Only sent over HTTPS
+//     sameSite: 'None', // Required for cross-origin requests
+//     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+// }
 
 router.post('/', async (req, res) => {
     const { username, password } = await req.body;
