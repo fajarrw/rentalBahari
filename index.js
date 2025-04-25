@@ -19,15 +19,15 @@ const limiter = rateLimit({
     max: 100 // limit each IP to n requests per windowMs
 });
 
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true, // Allow cookies to be sent
-};
-
 // const corsOptions = {
-//     origin: 'https://rental-bahari-fe.vercel.app', // Specify your frontend origin
+//     origin: 'http://localhost:3000',
 //     credentials: true, // Allow cookies to be sent
 // };
+
+const corsOptions = {
+    origin: 'https://rental-bahari-fe.vercel.app', // Specify your frontend origin
+    credentials: true, // Allow cookies to be sent
+};
 
 app.use(mongoSanitize());
 app.use(limiter);
