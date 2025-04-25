@@ -10,11 +10,13 @@ const ERR_USER_NOT_FOUND = 'User not found';
 const ERR_ADMIN_NOT_FOUND = 'Admin not found';
 
 const cookieConfigs = {
-    // httpOnly: true, // Prevent client-side JavaScript access
-    // secure: true, // Only sent over HTTPS
-    sameSite: 'Lax',
+    httpOnly: false, // Allow access via document.cookie
+    secure: true, // Required when SameSite=None
+    sameSite: 'None', // Allow cross-site/subdomain usage
+    domain: '.vercel.app', // Share across subdomains
+    path: '/', // Apply cookie to all paths
     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-}
+};
 
 // const cookieConfigs = {
 //     httpOnly: true, // Prevent client-side JavaScript access
