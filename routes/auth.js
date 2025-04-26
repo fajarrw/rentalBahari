@@ -38,8 +38,7 @@ router.post('/', async (req, res) => {
         const userData = { _id: user._id, role: 'user' };
         const token = jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET);
         // res.cookie('token', token, cookieConfigs);
-        res.json({ accessToken: token, role: 'user' });
-        res.status(200).json({ message: 'Login successful' });
+        res.status(200).json({ accessToken: token, role: 'user', message: 'Login successful' });
     })
 })
 
@@ -59,8 +58,7 @@ router.post('/admin', async (req, res) => {
         await Admin.updateOne({ _id: admin._id }, {
             lastLogin: Date.now()
         })
-        res.json({ accessToken: token, role: 'admin' });
-        res.json({ message: 'Login successful' });
+        res.json({ accessToken: token, role: 'admin', message: 'Login successful' });
     });
 })
 

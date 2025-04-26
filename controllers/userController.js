@@ -39,35 +39,22 @@ const getUserById = async (req, res, next) => {
     }
 }
 
-const addUser = async (req, res, next) => {
+const addUser = async (req, res) => {
     try {
-        let { name, username, email, password, telp } = await req.body;
+        const { name, username, email, password, telp } = req.body;
         const SALT = 10;
-        //input validation
+
         if (!name || !username || !email || !password || !telp) {
-            return res.status(400).send({ error: ERR_MISSING_REQUIRED_FIELDS });
+            return res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS });
         }
 
-        const user = await User.findOne({ email: email });
-        if (user !== null) return res.status(409).send({ message: ERR_USER_ALREADY_EXISTS });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(409).json({ message: ERR_USER_ALREADY_EXISTS });
 
-        bcrypt.hash(password, SALT, async (err, hash) => {
-            const userData = {
-                name,
-                username,
-                email,
-                password: hash,
-                telp,
-            };
-
-            const newUser = await User.create(userData);
-            const savedUserData = await newUser.save();
-            res.status(201).json({
-                message: 'User created successfully',
-                _id: savedUserData._id,
-            });
-        })
-
+        const hash = await bcrypt.hash(password, SALT);
+        const userData = { name, username, email, password: hash, telp };
+        const newUser = await User.create(userData);
+        res.status(201).json({ message: 'User created successfully', _id: newUser._id });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err });

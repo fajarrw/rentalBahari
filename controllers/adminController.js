@@ -51,31 +51,23 @@ const deleteAdmin = async (req, res) => {
 
 const createAdmin = async (req, res) => {
     try {
-        const { username, password } = await req.body;
+        const { username, password } = req.body;
         const SALT = 10;
-        //input validation
-        if (!username || !password) {
-            res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS });
-            return;
-        }
-        const admin = await Admin.findOne({ username: username });
-        if (admin !== null) return res.status(409).send({ message: ERR_ADMIN_ALREADY_EXISTS });
 
-        bcrypt.hash(password, SALT, async (err, hash) => {
-            const adminData = {
-                username,
-                password: hash,
-            };
-            const newAdmin = await Admin.create(adminData);
-            const savedAdminData = await newAdmin.save();
-            res.status(201).json({
-                message: 'Admin created successfully',
-                _id: savedAdminData._id,
-            });
-        })
+        if (!username || !password) {
+            return res.status(400).json({ error: ERR_MISSING_REQUIRED_FIELDS });
+        }
+
+        const admin = await Admin.findOne({ username });
+        if (admin) return res.status(409).json({ message: ERR_ADMIN_ALREADY_EXISTS });
+
+        const hash = await bcrypt.hash(password, SALT);
+        const adminData = { username, password: hash };
+        const newAdmin = await Admin.create(adminData);
+        res.status(201).json({ message: 'Admin created successfully', _id: newAdmin._id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
